@@ -1,0 +1,149 @@
+// user can post many posts
+// user can comment many posts
+// user can comment many comments
+// user can like the posts
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum BlogStatus {
+  draft
+  published
+  scheduled
+}
+
+enum DeleleteStatus {
+  yes
+  no
+}
+
+model Users {
+  id              String          @id @default(uuid())
+  username        String          @unique
+  email           String          @unique
+  firstName       String?
+  lastName        String?
+  password        String?
+  profile_picture String?
+  bio             String?
+  isDelete        DeleleteStatus? @default(no)
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  Posts      Posts[]
+  Comments   Comments[]
+  Post_Likes Post_Likes[]
+  Media      Media[]
+
+  following User_Follows[] @relation("Following")
+  follows   User_Follows[] @relation("Follows")
+}
+
+model Posts {
+  id        String          @id @default(uuid())
+  author_id String
+  title     String
+  slug      String?
+  content   String?
+  status    BlogStatus?     @default(draft)
+  isDelete  DeleleteStatus? @default(no)
+
+  published_at DateTime?
+  created_at   DateTime? @default(now())
+  updated_at   DateTime? @default(now())
+
+  author        Users           @relation(fields: [author_id], references: [id])
+  Comments      Comments[]
+  Post_Category Post_Category[]
+  Post_Tag      Post_Tag[]
+  Post_Likes    Post_Likes[]
+}
+
+model Comments {
+  id        String          @id @default(uuid())
+  post_id   String
+  author_id String
+  content   String
+  isDelete  DeleleteStatus? @default(no)
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  author Users @relation(fields: [author_id], references: [id])
+  post   Posts @relation(fields: [post_id], references: [id])
+}
+
+model Categories {
+  id       String          @id @default(uuid())
+  name     String
+  isDelete DeleleteStatus? @default(no)
+
+  Post_Category Post_Category[]
+}
+
+model Post_Category {
+  id          String @id @default(uuid())
+  post_id     String
+  category_id String
+
+  category Categories @relation(fields: [category_id], references: [id])
+  post     Posts      @relation(fields: [post_id], references: [id])
+}
+
+model Tags {
+  id       String          @id @default(uuid())
+  name     String
+  isDelete DeleleteStatus? @default(no)
+
+  Post_Tag Post_Tag[]
+}
+
+model Post_Tag {
+  id      String @id @default(uuid())
+  post_id String
+  tag_id  String
+
+  post Posts @relation(fields: [post_id], references: [id])
+  tag  Tags  @relation(fields: [tag_id], references: [id])
+}
+
+model Post_Likes {
+  id      String @id @default(uuid())
+  post_id String
+  user_id String
+
+  user Users @relation(fields: [user_id], references: [id])
+  post Posts @relation(fields: [post_id], references: [id])
+}
+
+model User_Follows {
+  id           String @id @default(uuid())
+  follower_id  String
+  following_id String
+
+  follower  Users @relation("Follows", fields: [follower_id], references: [id])
+  following Users @relation("Following", fields: [following_id], references: [id])
+
+  // ປ້ອງກັນ ໃນກໍລະນີ  user ກົດຕິດຕາມຕົວເອງ
+  @@unique([follower_id, following_id])
+}
+
+model Media {
+  id       String          @id @default(uuid())
+  url      String?
+  user_id  String
+  fileType String
+  isDelete DeleleteStatus? @default(no)
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  user Users @relation(fields: [user_id], references: [id])
+}
