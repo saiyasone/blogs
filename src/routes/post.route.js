@@ -6,6 +6,7 @@ const isAuthenticated = require("../middlewares/isAuthenticated.middleware");
 router.get("/", controller.getAllPosts);
 router.get("/:id", controller.getPost);
 router.post("/", [isAuthenticated], controller.createPost);
+router.post("/likes", [isAuthenticated], controller.createLikePost);
 router.put("/", [isAuthenticated], controller.updatePost);
 router.delete("/", [isAuthenticated], controller.deletePost);
 

@@ -28,11 +28,48 @@ const createPost = async (req, res) => {
   const { id: userId } = req.user;
 
   try {
-    const result = await postService.createPost({ userId, data: req.body });
+    const data = {
+      ...req.body,
+      tagIds: req.body.tagIds || [],
+    };
+
+    const result = await postService.createPost({ userId, data });
 
     responseHandler.created(res, {
       id: result.id,
       message: "post is created",
+    });
+  } catch (error) {
+    console.log({ error });
+    responseHandler.error(res, error);
+  }
+};
+
+const createLikePost = async (req, res) => {
+  const { postId, userId } = req.body;
+
+  try {
+    const checkPost = await postService.checkPostByOwnerId({
+      postId: postId,
+      userId,
+    });
+    if (!checkPost) {
+      return responseHandler.forbidden(
+        res,
+        "This post does not belong to owner"
+      );
+    }
+
+    const response = await postService.updatePost({
+      postId,
+      data: {
+        like: checkPost.like + 1,
+      },
+    });
+
+    responseHandler.created(res, {
+      id: response.id,
+      message: "like is updated",
     });
   } catch (error) {
     console.log({ error });
@@ -45,7 +82,10 @@ const updatePost = async (req, res) => {
   const { id, status } = req.body;
 
   try {
-    const checkPost = await postService.checkPostId({ postId: id, userId });
+    const checkPost = await postService.checkPostByOwnerId({
+      postId: id,
+      userId,
+    });
     if (!checkPost) {
       return responseHandler.forbidden(
         res,
@@ -68,6 +108,7 @@ const updatePost = async (req, res) => {
     const data = {
       ...req.body,
       status: dataSatus,
+      tagIds: req.body.tagIds || [],
     };
 
     await postService.updatePost({ postId: id, data });
@@ -87,7 +128,10 @@ const deletePost = async (req, res) => {
   const { id } = req.body;
 
   try {
-    const checkPost = await postService.checkPostId({ postId: id, userId });
+    const checkPost = await postService.checkPostByOwnerId({
+      postId: id,
+      userId,
+    });
     if (!checkPost) {
       return responseHandler.forbidden(
         res,
@@ -111,6 +155,7 @@ module.exports = {
   getPost,
 
   createPost,
+  createLikePost,
   updatePost,
   deletePost,
 };

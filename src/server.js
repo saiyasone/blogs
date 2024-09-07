@@ -5,6 +5,10 @@ const cors = require("cors");
 const app = express();
 const db = require("./configs/db.config");
 
+const passport = require("passport");
+const cookieSession = require("cookie-session");
+
+require("./providers/googleAuth.provider");
 require("dotenv").config();
 
 const mainRoutes = require("./routes/index.route");
@@ -16,6 +20,16 @@ app.use(
     extended: false,
   })
 );
+app.use(
+  cookieSession({
+    name: "google-session",
+    keys: [`${process.env.SECRET_SESSION_KEY}`],
+    maxAge: 24 * 60 * 60 * 100,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use("/api/v1", mainRoutes);
 
 const PORT = process.env.PORT || 5000;

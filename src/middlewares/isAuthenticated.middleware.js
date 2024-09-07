@@ -20,7 +20,7 @@ const isAuthenticated = (req, res, next) => {
     };
     jwtVerify(jwtToken, req, res, next);
   } else {
-    responseHandler.unauthorize(res, "No token provided");
+    responseHandler.unauthorize(res, "User is not authorized");
   }
 };
 

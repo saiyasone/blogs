@@ -5,6 +5,7 @@ const responseHandler = require("../utils/responseHandler");
 const secretTokenKey = ENV_KEYS.TOKEN_SECRET_KEY;
 
 const { encryptDataCrypt, decryptDataCrypt } = require("./encrypt-decrypt");
+const userService = require("../services/user.service");
 
 const jwtSign = (user) => {
   const encryptedToken = encryptDataCrypt(JSON.stringify(user));
@@ -41,9 +42,19 @@ const jwtVerify = async (token, req, res, next) => {
     }
 
     const tokenDecrypted = decryptDataCrypt(decoded.encryptedData);
-    // id, username, newName
-    req.user = tokenDecrypted;
-    next();
+    userService
+      .getUserById({
+        userId: tokenDecrypted.id,
+      })
+      .then(() => {
+        // id, username, email => tokenDecrypted
+        req.user = tokenDecrypted;
+        next();
+      })
+      .catch((err) => {
+        console.log("Token is not valid", err);
+        return responseHandler.unauthorize(res, "Unauthorize");
+      });
   });
 };
 
@@ -54,7 +65,7 @@ const jwtDecode = (token) => {
 
 const jwtExpire = (token) => {
   let decodedToken = jwt.decode(token);
-  // jwt decoded => encryptedData, iat, exp 
+  // jwt decoded => encryptedData, iat, exp
   const dateExpired = new Date(decodedToken.exp * 1000).toDateString();
   return moment(dateExpired).format("DD-MM-YYYY");
 };

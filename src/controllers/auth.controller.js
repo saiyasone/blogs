@@ -64,7 +64,25 @@ const Login = async (req, res) => {
 
     responseHandler.ok(res, {
       accessToken,
-      user,
+    });
+  } catch (error) {
+    console.log({ error });
+    responseHandler.error(res, error);
+  }
+};
+
+const GoogleSignIn = async (req, res) => {
+  try {
+    if (!req.user) {
+      return responseHandler.notfound(
+        res,
+        "Sign in with google account is failed"
+      );
+    }
+
+    responseHandler.created(res, {
+      user: req.user?.profile,
+      accessToken: req.user.accessToken,
     });
   } catch (error) {
     console.log({ error });
@@ -75,4 +93,6 @@ const Login = async (req, res) => {
 module.exports = {
   Login,
   Register,
+
+  GoogleSignIn,
 };

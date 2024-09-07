@@ -37,10 +37,9 @@ model Users {
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
 
-  Posts      Posts[]
-  Comments   Comments[]
-  Post_Likes Post_Likes[]
-  Media      Media[]
+  Posts    Posts[]
+  Comments Comments[]
+  Media    Media[]
 
   following User_Follows[] @relation("Following")
   follows   User_Follows[] @relation("Follows")
@@ -52,6 +51,7 @@ model Posts {
   title     String
   slug      String?
   content   String?
+  like      Int?            @default(0)
   status    BlogStatus?     @default(draft)
   isDelete  DeleleteStatus? @default(no)
 
@@ -63,9 +63,9 @@ model Posts {
   Comments      Comments[]
   Post_Category Post_Category[]
   Post_Tag      Post_Tag[]
-  Post_Likes    Post_Likes[]
 }
 
+// author_id is person who comments
 model Comments {
   id        String          @id @default(uuid())
   post_id   String
@@ -112,15 +112,6 @@ model Post_Tag {
 
   post Posts @relation(fields: [post_id], references: [id])
   tag  Tags  @relation(fields: [tag_id], references: [id])
-}
-
-model Post_Likes {
-  id      String @id @default(uuid())
-  post_id String
-  user_id String
-
-  user Users @relation(fields: [user_id], references: [id])
-  post Posts @relation(fields: [post_id], references: [id])
 }
 
 model User_Follows {

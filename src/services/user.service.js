@@ -1,3 +1,6 @@
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
 const db = require("../configs/db.config");
 
 class UserService {
@@ -25,7 +28,7 @@ class UserService {
         },
       });
 
-      return await user;
+      return user;
     } catch (error) {
       throw error;
     }
@@ -46,12 +49,10 @@ class UserService {
         },
         select: {
           id: true,
-          username: true,
-          email: true,
         },
       });
 
-      return await user;
+      return user;
     } catch (error) {
       throw error;
     }
@@ -77,7 +78,7 @@ class UserService {
         },
       });
 
-      return await user;
+      return user;
     } catch (error) {
       throw error;
     }
@@ -103,7 +104,7 @@ class UserService {
         },
       });
 
-      return await user;
+      return user;
     } catch (error) {
       throw error;
     }
@@ -123,7 +124,7 @@ class UserService {
         },
       });
 
-      return await newUser;
+      return newUser;
     } catch (error) {
       throw error;
     }

@@ -4,13 +4,14 @@ const selectModel = {
   id: true,
   title: true,
   content: true,
+  like: true,
   updated_at: true,
   published_at: true,
   author: {
     select: {
+      id: true,
       firstName: true,
       lastName: true,
-      email: true,
     },
   },
 };
@@ -23,6 +24,16 @@ class PostService {
       },
       select: {
         ...selectModel,
+        Post_Tag: {
+          select: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -49,7 +60,7 @@ class PostService {
     return await response;
   }
 
-  async checkPostId({ postId, userId }) {
+  async checkPostByOwnerId({ postId, userId }) {
     const response = await db.posts.findFirst({
       where: {
         AND: [
@@ -67,6 +78,7 @@ class PostService {
       select: {
         id: true,
         status: true,
+        like: true,
       },
     });
 
@@ -76,8 +88,16 @@ class PostService {
   async createPost({ userId, data }) {
     const newPost = await db.posts.create({
       data: {
+        title: data.title,
+        content: data.content,
         author_id: userId,
-        ...data,
+        Post_Tag: {
+          createMany: {
+            data: data.tagIds?.map((tag) => ({
+              tag_id: tag,
+            })),
+          },
+        },
       },
       select: {
         id: true,
@@ -93,7 +113,16 @@ class PostService {
         id: postId,
       },
       data: {
-        ...data,
+        title: data.title,
+        content: data.content,
+        status: data.status,
+        Post_Tag: {
+          update: {
+            data: data.tagIds?.map((tag) => ({
+              tag_id: tag,
+            })),
+          },
+        },
       },
       select: {
         id: true,

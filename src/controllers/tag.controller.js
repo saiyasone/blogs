@@ -37,8 +37,17 @@ const createTag = async (req, res) => {
 };
 
 const updateTag = async (req, res) => {
+  const { id: tagId, name } = req.body;
   try {
-    const response = await tagService.createTag(req.body);
+    const checkTag = await tagService.getTagById({ tagId });
+    if (!checkTag) {
+      return responseHandler.notfound(res, "Tag not found");
+    }
+
+    const response = await tagService.updateTag({
+      tagId,
+      name,
+    });
 
     responseHandler.updated(res, {
       id: response.id,
@@ -52,7 +61,13 @@ const updateTag = async (req, res) => {
 
 const deleteTag = async (req, res) => {
   const { tagId } = req.body;
+
   try {
+    const checkTag = await tagService.getTagById({ tagId });
+    if (!checkTag) {
+      return responseHandler.notfound(res, "Tag not found");
+    }
+
     await tagService.deleteTag({ tagId });
 
     responseHandler.created(res, {

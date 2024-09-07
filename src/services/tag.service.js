@@ -1,10 +1,18 @@
 const db = require("../configs/db.config");
 
+const selectModel = {
+  id: true,
+  name: true,
+};
+
 class TagService {
   async getAllTags() {
     const response = await db.tags.findMany({
       where: {
         isDelete: "no",
+      },
+      select: {
+        ...selectModel,
       },
     });
     return await response;
@@ -14,6 +22,9 @@ class TagService {
     const response = await db.tags.findFirst({
       where: {
         AND: [{ isDelete: "no" }, { id: tagId }],
+      },
+      select: {
+        ...selectModel,
       },
     });
 
@@ -33,13 +44,13 @@ class TagService {
     return await response;
   }
 
-  async updateTag({ tagId, data }) {
+  async updateTag({ tagId, name }) {
     const response = await db.tags.update({
       where: {
         id: tagId,
       },
       data: {
-        ...data,
+        name,
       },
       select: {
         id: true,
@@ -54,9 +65,7 @@ class TagService {
       where: {
         id: tagId,
       },
-      select: {
-        id: true,
-      },
+
       data: {
         isDelete: "yes",
       },
