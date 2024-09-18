@@ -61,6 +61,7 @@ const updateComment = async (req, res) => {
     userId,
     commentId,
   });
+
   if (!checkPost) {
     return responseHandler.notfound(res, "Comment is not found");
   }

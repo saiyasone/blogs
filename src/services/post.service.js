@@ -4,6 +4,7 @@ const selectModel = {
   id: true,
   title: true,
   content: true,
+  status: true,
   like: true,
   updated_at: true,
   published_at: true,
@@ -14,24 +15,103 @@ const selectModel = {
       lastName: true,
     },
   },
+  Post_Tag: {
+    select: {
+      tag: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  },
 };
 
 class PostService {
-  async getAllPosts() {
-    const response = await db.posts.findMany({
+  async getTotalPost() {
+    const res = await db.posts.count({
       where: {
         isDelete: "no",
       },
+    });
+
+    return res;
+  }
+
+  async getAllPosts({ query }) {
+    const response = await db.posts.findMany({
+      take: query.limit,
+      where: {
+        isDelete: "no",
+
+        AND: [
+          {
+            title: {
+              contains: query.title,
+            },
+          },
+          {
+            author: {
+              OR: [
+                {
+                  firstName: {
+                    contains: query.author,
+                  },
+                },
+                {
+                  lastName: {
+                    contains: query.author,
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
       select: {
         ...selectModel,
-        Post_Tag: {
-          select: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-              },
+      },
+    });
+
+    return await response;
+  }
+
+  async getPostByUserId({ username, limit, search }) {
+    const response = await db.posts.findMany({
+      where: {
+        AND: [
+          {
+            isDelete: "no",
+          },
+          {
+            author: {
+              username,
             },
+          },
+          {
+            AND: [
+              {
+                title: {
+                  contains: search.title,
+                },
+              },
+              {
+                status: {
+                  equals: search.status || "draft",
+                },
+              },
+            ],
+          },
+        ],
+      },
+      take: limit,
+      select: {
+        ...selectModel,
+        author: {
+          select: {
+            ...selectModel.author.select,
+            username: true,
+            profile_picture: true,
           },
         },
       },
@@ -54,6 +134,9 @@ class PostService {
       },
       select: {
         ...selectModel,
+        author: {
+          select: { ...selectModel.author.select, username: true },
+        },
       },
     });
 
@@ -135,7 +218,12 @@ class PostService {
   async deletePost({ postId }) {
     return await db.posts.update({
       where: {
-        id: postId,
+        AND: [
+          {
+            id: postId,
+          },
+          {},
+        ],
       },
       data: {
         isDelete: "yes",

@@ -2,10 +2,33 @@ const postService = require("../services/post.service");
 const responseHandler = require("../utils/responseHandler");
 
 const getAllPosts = async (req, res) => {
-  try {
-    const result = await postService.getAllPosts();
+  const dataQuery = req.query;
 
-    responseHandler.ok(res, result);
+  let title = "";
+  let author = "";
+  let limit = 5;
+
+  if (!!dataQuery?.title) {
+    title = dataQuery.title;
+  }
+  if (!!dataQuery?.author) {
+    author = dataQuery.author;
+  }
+  if (!!dataQuery?.limit) {
+    limit = parseInt(dataQuery.limit);
+  }
+
+  const query = {
+    title,
+    author,
+    limit,
+  };
+
+  try {
+    const total = await postService.getTotalPost();
+    const result = await postService.getAllPosts({ query });
+
+    responseHandler.ok(res, { total, data: result });
   } catch (error) {
     console.log({ error });
     responseHandler.error(res, error);
@@ -16,6 +39,32 @@ const getPost = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await postService.getPostById({ postId: id });
+
+    responseHandler.ok(res, result);
+  } catch (error) {
+    console.log({ error });
+    responseHandler.error(res, error);
+  }
+};
+
+const getUserPost = async (req, res) => {
+  const query = req.query;
+  const limit = parseInt(query?.limit) || 10;
+  const title = query?.title || "";
+  const status = query?.status || "";
+  const username = query?.username || "";
+  const usernameSplit = username.split("@")[1];
+  const search = {
+    title,
+    status,
+  };
+
+  try {
+    const result = await postService.getPostByUserId({
+      username: usernameSplit,
+      limit,
+      search,
+    }); 
 
     responseHandler.ok(res, result);
   } catch (error) {
@@ -50,7 +99,7 @@ const createLikePost = async (req, res) => {
 
   try {
     const checkPost = await postService.checkPostByOwnerId({
-      postId: postId,
+      postId,
       userId,
     });
     if (!checkPost) {
@@ -59,6 +108,8 @@ const createLikePost = async (req, res) => {
         "This post does not belong to owner"
       );
     }
+
+    console.log(checkPost);
 
     const response = await postService.updatePost({
       postId,
@@ -153,6 +204,7 @@ const deletePost = async (req, res) => {
 module.exports = {
   getAllPosts,
   getPost,
+  getUserPost,
 
   createPost,
   createLikePost,

@@ -35,7 +35,7 @@ const jwtVerify = async (token, req, res, next) => {
   await jwt.verify(token.accessToken, secretTokenKey, (err, decoded) => {
     if (err) {
       if (Date.now() >= err.expiredAt) {
-        return responseHandler.tokenExpired(res);
+        return responseHandler.unauthorize(res, "Token is expired");
       }
 
       return responseHandler.unauthorize(res, "Unauthorize");

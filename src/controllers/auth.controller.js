@@ -11,12 +11,12 @@ const Register = async (req, res) => {
   try {
     const userCheck = await userService.checkUserExistByUsername({ username });
     if (userCheck) {
-      return responseHandler.unauthorize(res, "Username already exists");
+      return responseHandler.dataConflict(res, "Username already exists");
     }
 
     const emailCheck = await userService.checkUserExistByEmail({ email });
     if (emailCheck) {
-      return responseHandler.unauthorize(res, "Username already exists");
+      return responseHandler.dataConflict(res, "Email already exists");
     }
 
     const hashPassword = await encryptedPassword(password);
@@ -64,6 +64,7 @@ const Login = async (req, res) => {
 
     responseHandler.ok(res, {
       accessToken,
+      message: "Login success",
     });
   } catch (error) {
     console.log({ error });

@@ -84,6 +84,23 @@ class UserService {
     }
   }
 
+  async getPublicUser({ username }) {
+    const res = await db.users.findFirst({
+      where: {
+        AND: [
+          {
+            isDelete: "no",
+          },
+          {
+            username,
+          },
+        ],
+      },
+    });
+
+    return await res;
+  }
+
   async checkUserExistByUsername({ username }) {
     try {
       const user = await db.users.findFirst({
@@ -128,6 +145,24 @@ class UserService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async updateUser({ userId, firstName, lastName, bio }) {
+    const res = await db.users.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        bio,
+        firstName,
+        lastName,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return await res;
   }
 }
 

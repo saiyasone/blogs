@@ -46,14 +46,17 @@ model Users {
 }
 
 model Posts {
-  id        String          @id @default(uuid())
+  id        String  @id @default(uuid())
   author_id String
   title     String
+  subtitle  String?
   slug      String?
   content   String?
-  like      Int?            @default(0)
-  status    BlogStatus?     @default(draft)
-  isDelete  DeleleteStatus? @default(no)
+  image     String?
+  like     Int?            @default(0)
+  reads    Int?            @default(0)
+  status   BlogStatus?     @default(draft)
+  isDelete DeleleteStatus? @default(no)
 
   published_at DateTime?
   created_at   DateTime? @default(now())

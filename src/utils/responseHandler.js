@@ -16,18 +16,9 @@ const created = (res, data) => responseWithData(res, 201, data);
 
 const updated = (res, data) => responseWithData(res, 201, data);
 
-
 const badrequest = (res, message) => {
   responseWithData(res, 400, {
     status: 400,
-    message,
-  });
-};
-
-// ======== Response Data with 400 =========
-const error = (res, message) => {
-  responseWithData(res, 500, {
-    status: 500,
     message,
   });
 };
@@ -39,29 +30,10 @@ const unauthorize = (res, message) => {
   });
 };
 
-const tokenExpired = (res) => {
-  responseWithData(res, 401, {
-    status: 401,
-    message: "token is expired",
-  });
-};
-
-const emptyToken = (res) =>
-  responseWithData(res, 401, {
-    status: 401,
-    message: "No token provided",
-  });
-
 const forbidden = (res, message) =>
   responseWithData(res, 403, {
     status: 403,
     message,
-  });
-
-const validation = (res, error) =>
-  responseWithData(res, 422, {
-    status: 422,
-    message: error,
   });
 
 const notfound = (res, message) =>
@@ -69,6 +41,27 @@ const notfound = (res, message) =>
     status: 404,
     message,
   });
+
+const dataConflict = (res, message) => {
+  responseWithData(res, 409, {
+    status: 409,
+    message,
+  });
+};
+
+const validation = (res, error) =>
+  responseWithData(res, 422, {
+    status: 422,
+    message: error,
+  });
+
+// ======== Response Data with 400 =========
+const error = (res, message) => {
+  responseWithData(res, 500, {
+    status: 500,
+    message,
+  });
+};
 
 module.exports = {
   ok,
@@ -79,9 +72,8 @@ module.exports = {
   badrequest,
   noContent,
   unauthorize,
+  dataConflict,
   notfound,
   forbidden,
-  emptyToken,
   validation,
-  tokenExpired,
 };
