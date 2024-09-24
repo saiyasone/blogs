@@ -6,6 +6,7 @@ const categoryRoute = require("../routes/category.route");
 const tagRoute = require("../routes/tag.route");
 const commentRoute = require("../routes/comment.route");
 const userRoute = require("../routes/user.route");
+const storageRoute = require("../routes/storage.route");
 
 router.use("/auth", authRoute);
 router.use("/blog", postRoute);
@@ -13,5 +14,6 @@ router.use("/category", categoryRoute);
 router.use("/tag", tagRoute);
 router.use("/comment", commentRoute);
 router.use("/user", userRoute);
+router.use("/storage", storageRoute);
 
 module.exports = router;

@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
+const isAuth = require("../middlewares/isAuthenticated.middleware");
 const controller = require("../controllers/auth.controller");
 
 router.post("/login", controller.Login);
 router.post("/register", controller.Register);
+router.post("/reset-password", [isAuth], controller.ResetPassword);
 
 // auth google
 router.get(
@@ -14,7 +16,6 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    // successRedirect: `${process.env.GOOGLE_CLIENT_URL}`,
     successRedirect: `/api/v1/auth/google/success`,
     failureRedirect: "/api/v1/auth/google/failed",
   })

@@ -29,7 +29,7 @@ const getPulicUser = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   const { id: userId } = req.user;
-  const {} = req.body;
+
   try {
     const user = await userService.getUserById({ userId });
     if (!user)

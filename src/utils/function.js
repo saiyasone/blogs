@@ -1,4 +1,5 @@
 const crypto = require("crypto-js");
+const path = require("path");
 
 // format string to utf8 for support lao and thai languages
 // ກິນແມວ => ກິນແມວ
@@ -16,6 +17,21 @@ const getFileExtension = (file) => {
   }
 
   return "";
+};
+
+const validateImage = (file) => {
+  const allowedFileTypes = /jpeg|jpg|png/;
+
+  const extname = allowedFileTypes.test(
+    path.extname(file.originalname).toLowerCase()
+  );
+  const mimetype = allowedFileTypes.test(file.mimetype);
+
+  if (extname && mimetype) {
+    return true;
+  }
+
+  return false;
 };
 
 // Random QR Code number
@@ -56,7 +72,6 @@ module.exports = {
   randomFileNewName,
   getRandomNewName,
   getRandomQRCode,
-  encodeData,
-  decodeData,
   encodeShortURL,
+  validateImage,
 };

@@ -24,15 +24,16 @@ enum DeleleteStatus {
 }
 
 model Users {
-  id              String          @id @default(uuid())
-  username        String          @unique
-  email           String          @unique
-  firstName       String?
-  lastName        String?
-  password        String?
-  profile_picture String?
-  bio             String?
-  isDelete        DeleleteStatus? @default(no)
+  id               String          @id @default(uuid())
+  username         String          @unique
+  email            String          @unique
+  firstName        String?
+  lastName         String?
+  password         String?
+  original_picture String?
+  profile_picture  String?
+  bio              String?
+  isDelete         DeleleteStatus? @default(no)
 
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
@@ -46,19 +47,20 @@ model Users {
 }
 
 model Posts {
-  id        String  @id @default(uuid())
+  id        String          @id @default(uuid())
   author_id String
   title     String
   subtitle  String?
   slug      String?
-  content   String?
-  image     String?
-  like     Int?            @default(0)
-  reads    Int?            @default(0)
-  status   BlogStatus?     @default(draft)
-  isDelete DeleleteStatus? @default(no)
+  content   String?         @db.LongText
+  imageUrl  String?
+  original  String?
+  like      Int?            @default(0)
+  reads     Int?            @default(0)
+  status    BlogStatus?     @default(draft)
+  isDelete  DeleleteStatus? @default(no)
 
-  published_at DateTime?
+  published_at DateTime? @default(now())
   created_at   DateTime? @default(now())
   updated_at   DateTime? @default(now())
 

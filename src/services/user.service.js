@@ -25,6 +25,7 @@ class UserService {
           lastName: true,
           bio: true,
           profile_picture: true,
+          original_picture: true,
         },
       });
 
@@ -49,6 +50,7 @@ class UserService {
         },
         select: {
           id: true,
+          password: true,
         },
       });
 
@@ -156,6 +158,39 @@ class UserService {
         bio,
         firstName,
         lastName,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return await res;
+  }
+
+  async updatePassword({ password, userId }) {
+    const res = await db.users.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        password,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return await res;
+  }
+
+  async updateUserProfile({ userId, image, original }) {
+    const res = await db.users.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        profile_picture: image,
+        original_picture: original,
       },
       select: {
         id: true,

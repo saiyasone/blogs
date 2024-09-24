@@ -1,3 +1,4 @@
+const BlogStatus = require("../enums/blog-status.enum");
 const postService = require("../services/post.service");
 const responseHandler = require("../utils/responseHandler");
 
@@ -50,23 +51,47 @@ const getPost = async (req, res) => {
 const getUserPost = async (req, res) => {
   const query = req.query;
   const limit = parseInt(query?.limit) || 10;
-  const title = query?.title || "";
-  const status = query?.status || "";
+
+  let title = "";
+  if (!!query?.title) {
+    title = query.title;
+  }
+
+  let status = "";
+  if (!!query?.status) {
+    status = query.status;
+  }
+
+  let search = "";
+  if (!!query?.search) {
+    search = query.search;
+  }
+
   const username = query?.username || "";
   const usernameSplit = username.split("@")[1];
-  const search = {
+  const searchInput = {
     title,
     status,
+    search,
   };
 
   try {
+    if (!usernameSplit) {
+      return responseHandler.ok(res, []);
+    }
+
     const result = await postService.getPostByUserId({
+      search: searchInput,
       username: usernameSplit,
       limit,
-      search,
-    }); 
+    });
 
-    responseHandler.ok(res, result);
+    const finalResult = result.map((blog) => ({
+      ...blog,
+      total_comment: blog.Comments.length,
+    }));
+
+    responseHandler.ok(res, finalResult);
   } catch (error) {
     console.log({ error });
     responseHandler.error(res, error);
@@ -102,6 +127,7 @@ const createLikePost = async (req, res) => {
       postId,
       userId,
     });
+
     if (!checkPost) {
       return responseHandler.forbidden(
         res,
@@ -109,13 +135,12 @@ const createLikePost = async (req, res) => {
       );
     }
 
-    console.log(checkPost);
-
-    const response = await postService.updatePost({
+    const data = {
+      like: checkPost.like + 1,
+    };
+    const response = await postService.updateLike({
       postId,
-      data: {
-        like: checkPost.like + 1,
-      },
+      data,
     });
 
     responseHandler.created(res, {
@@ -144,21 +169,21 @@ const updatePost = async (req, res) => {
       );
     }
 
-    let dataSatus = "";
+    let dataStatus = "";
 
     if (status === "draft") {
-      dataSatus = "draft";
+      dataStatus = "draft";
     } else if (status === "published") {
-      dataSatus = "published";
+      dataStatus = "published";
     } else if (status === "scheduled") {
-      dataSatus = "draft";
+      dataStatus = "draft";
     } else {
-      dataSatus = checkPost.status;
+      dataStatus = checkPost.status;
     }
 
     const data = {
       ...req.body,
-      status: dataSatus,
+      status: dataStatus,
       tagIds: req.body.tagIds || [],
     };
 

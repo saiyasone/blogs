@@ -91,9 +91,53 @@ const GoogleSignIn = async (req, res) => {
   }
 };
 
+const ResetPassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const { id: userId } = req.user;
+
+  try {
+    const checkUser = await userService.getUserById({ userId });
+    if (!checkUser.id) {
+      return responseHandler.dataConflict(
+        res,
+        "This user has not found or can't be allowed to access"
+      );
+    }
+
+    const isMatch = await decryptedPassword(
+      checkUser.password,
+      currentPassword
+    );
+    if (!isMatch) {
+      return responseHandler.unauthorize(
+        res,
+        "The current password is not correct"
+      );
+    }
+
+    const hashPassword = await encryptedPassword(newPassword);
+    if (!hashPassword) {
+      return responseHandler.error(res, "The password cannot hashed");
+    }
+
+    await userService.updatePassword({
+      userId,
+      password: hashPassword,
+    });
+
+    responseHandler.updated(res, {
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.log({ error });
+    responseHandler.error(res, error);
+  }
+};
+
 module.exports = {
   Login,
   Register,
+  ResetPassword,
 
   GoogleSignIn,
 };

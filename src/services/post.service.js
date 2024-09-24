@@ -1,4 +1,6 @@
 const db = require("../configs/db.config");
+const BlogStatus = require("../enums/blog-status.enum");
+const DeleleteStatus = require("../enums/delete-status.enum");
 
 const selectModel = {
   id: true,
@@ -6,13 +8,21 @@ const selectModel = {
   content: true,
   status: true,
   like: true,
+  subtitle: true,
   updated_at: true,
   published_at: true,
+  reads: true,
   author: {
     select: {
       id: true,
       firstName: true,
       lastName: true,
+      profile_picture: true,
+    },
+  },
+  Comments: {
+    select: {
+      id: true,
     },
   },
   Post_Tag: {
@@ -31,7 +41,14 @@ class PostService {
   async getTotalPost() {
     const res = await db.posts.count({
       where: {
-        isDelete: "no",
+        AND: [
+          {
+            isDelete: DeleleteStatus.NO,
+          },
+          {
+            status: BlogStatus.PUBLISHED,
+          },
+        ],
       },
     });
 
@@ -42,13 +59,16 @@ class PostService {
     const response = await db.posts.findMany({
       take: query.limit,
       where: {
-        isDelete: "no",
+        isDelete: DeleleteStatus.NO,
 
         AND: [
           {
             title: {
               contains: query.title,
             },
+          },
+          {
+            status: BlogStatus.PUBLISHED,
           },
           {
             author: {
@@ -81,7 +101,7 @@ class PostService {
       where: {
         AND: [
           {
-            isDelete: "no",
+            isDelete: DeleleteStatus.NO,
           },
           {
             author: {
@@ -89,23 +109,26 @@ class PostService {
             },
           },
           {
-            AND: [
-              {
-                title: {
-                  contains: search.title,
-                },
-              },
-              {
-                status: {
-                  equals: search.status || "draft",
-                },
-              },
-            ],
+            title: {
+              contains: search.title,
+            },
+          },
+          {
+            status: {
+              equals: search.status || "draft",
+            },
           },
         ],
       },
       take: limit,
       select: {
+        id: true,
+        title: true,
+        subtitle: true,
+        updated_at: true,
+        published_at: true,
+        reads: true,
+        like: true,
         ...selectModel,
         author: {
           select: {
@@ -114,6 +137,7 @@ class PostService {
             profile_picture: true,
           },
         },
+        Post_Tag: false,
       },
     });
 
@@ -128,7 +152,7 @@ class PostService {
             id: postId,
           },
           {
-            isDelete: "no",
+            isDelete: DeleleteStatus.NO,
           },
         ],
       },
@@ -137,6 +161,7 @@ class PostService {
         author: {
           select: { ...selectModel.author.select, username: true },
         },
+        Comments: false,
       },
     });
 
@@ -148,7 +173,7 @@ class PostService {
       where: {
         AND: [
           {
-            isDelete: "no",
+            isDelete: DeleleteStatus.NO,
           },
           {
             id: postId,
@@ -173,6 +198,8 @@ class PostService {
       data: {
         title: data.title,
         content: data.content,
+        subtitle: data.description,
+        status: data.status,
         author_id: userId,
         Post_Tag: {
           createMany: {
@@ -196,8 +223,8 @@ class PostService {
         id: postId,
       },
       data: {
-        title: data.title,
-        content: data.content,
+        title: data.title || "",
+        content: data.content || "",
         status: data.status,
         Post_Tag: {
           update: {
@@ -215,21 +242,49 @@ class PostService {
     return await updatePost;
   }
 
-  async deletePost({ postId }) {
-    return await db.posts.update({
+  async updatePostImage({ postId, imageUrl, original }) {
+    const res = await db.posts.update({
       where: {
-        AND: [
-          {
-            id: postId,
-          },
-          {},
-        ],
+        id: postId,
       },
       data: {
-        isDelete: "yes",
+        imageUrl,
+        original,
       },
       select: {
         id: true,
+      },
+    });
+
+    return res;
+  }
+
+  async updateLike({ postId, data }) {
+    const updatePost = await db.posts.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        like: data.like,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return await updatePost;
+  }
+
+  async deletePost({ postId }) {
+    return await db.posts.update({
+      data: {
+        isDelete: DeleleteStatus.YES,
+      },
+      select: {
+        id: true,
+      },
+      where: {
+        id: postId,
       },
     });
   }

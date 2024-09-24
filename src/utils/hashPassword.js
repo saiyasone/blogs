@@ -5,8 +5,8 @@ const encryptedPassword = async (password) => {
   return hashPassword;
 };
 
-const decryptedPassword = (oldPassword, enterPassword) => {
-  const isMatch = bcrypt.compareSync(enterPassword, oldPassword);
+const decryptedPassword = (currentPassword, enterPassword) => {
+  const isMatch = bcrypt.compareSync(enterPassword, currentPassword);
   return isMatch;
 };
 

@@ -22,14 +22,20 @@ class CommentService {
     return response;
   }
 
-  async getCountComment() {
+  async getAllCountComment() {
     const response = await db.comments.count({
       where: {
-        AND: [
-          {
-            isDelete: "no",
-          },
-        ],
+        isDelete: "no",
+      },
+    });
+
+    return response;
+  }
+
+  async getCountPostComment({ postId }) {
+    const response = await db.comments.count({
+      where: {
+        AND: [{ isDelete: "no" }, { post_id: postId }],
       },
     });
 

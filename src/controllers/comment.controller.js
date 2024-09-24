@@ -5,7 +5,11 @@ const getCommentByPost = async (req, res) => {
   const { postId } = req.params;
   const { limit } = req.query;
 
-  const take = parseInt(limit) || 5;
+  let limitData = "";
+  if (!!limit) {
+    limitData = limit;
+  }
+  const take = parseInt(limitData) || 5;
 
   try {
     const checkPost = await commentService.checkCommentPost({ postId });
@@ -13,7 +17,7 @@ const getCommentByPost = async (req, res) => {
       return responseHandler.notfound(res, "Post not found");
     }
 
-    const total = await commentService.getCountComment();
+    const total = await commentService.getCountPostComment({ postId });
     const response = await commentService.getCommentByPost({
       postId,
       take,
