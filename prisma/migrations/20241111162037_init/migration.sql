@@ -3,7 +3,10 @@ CREATE TABLE `Users` (
     `id` VARCHAR(191) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
-    `password` VARCHAR(191) NOT NULL,
+    `firstName` VARCHAR(191) NULL,
+    `lastName` VARCHAR(191) NULL,
+    `password` VARCHAR(191) NULL,
+    `original_picture` VARCHAR(191) NULL,
     `profile_picture` VARCHAR(191) NULL,
     `bio` VARCHAR(191) NULL,
     `isDelete` ENUM('yes', 'no') NULL DEFAULT 'no',
@@ -20,11 +23,16 @@ CREATE TABLE `Posts` (
     `id` VARCHAR(191) NOT NULL,
     `author_id` VARCHAR(191) NOT NULL,
     `title` VARCHAR(191) NOT NULL,
+    `subtitle` VARCHAR(191) NULL,
     `slug` VARCHAR(191) NULL,
-    `content` VARCHAR(191) NULL,
+    `content` LONGTEXT NULL,
+    `imageUrl` VARCHAR(191) NULL,
+    `original` VARCHAR(191) NULL,
+    `like` INTEGER NULL DEFAULT 0,
+    `reads` INTEGER NULL DEFAULT 0,
     `status` ENUM('draft', 'published', 'scheduled') NULL DEFAULT 'draft',
     `isDelete` ENUM('yes', 'no') NULL DEFAULT 'no',
-    `published_at` DATETIME(3) NULL,
+    `published_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
     `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -81,15 +89,6 @@ CREATE TABLE `Post_Tag` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Post_Likes` (
-    `id` VARCHAR(191) NOT NULL,
-    `post_id` VARCHAR(191) NOT NULL,
-    `user_id` VARCHAR(191) NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `User_Follows` (
     `id` VARCHAR(191) NOT NULL,
     `follower_id` VARCHAR(191) NOT NULL,
@@ -132,12 +131,6 @@ ALTER TABLE `Post_Tag` ADD CONSTRAINT `Post_Tag_post_id_fkey` FOREIGN KEY (`post
 
 -- AddForeignKey
 ALTER TABLE `Post_Tag` ADD CONSTRAINT `Post_Tag_tag_id_fkey` FOREIGN KEY (`tag_id`) REFERENCES `Tags`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Post_Likes` ADD CONSTRAINT `Post_Likes_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Post_Likes` ADD CONSTRAINT `Post_Likes_post_id_fkey` FOREIGN KEY (`post_id`) REFERENCES `Posts`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `User_Follows` ADD CONSTRAINT `User_Follows_follower_id_fkey` FOREIGN KEY (`follower_id`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

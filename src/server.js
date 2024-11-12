@@ -48,6 +48,5 @@ main()
   .catch(async (error) => {
     await db.$disconnect();
     console.log("Server.js error: " + error);
-
     process.exit(0);
   });

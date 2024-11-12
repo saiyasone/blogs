@@ -26,7 +26,7 @@ const getAllPosts = async (req, res) => {
   };
 
   try {
-    const total = await postService.getTotalPost();
+    const total = await postService.getTotalPost({ query });
     const result = await postService.getAllPosts({ query });
 
     responseHandler.ok(res, { total, data: result });
@@ -120,19 +120,16 @@ const createPost = async (req, res) => {
 };
 
 const createLikePost = async (req, res) => {
-  const { postId, userId } = req.body;
+  const { postId } = req.body;
+  const { id: userId } = req.user;
 
   try {
-    const checkPost = await postService.checkPostByOwnerId({
+    const checkPost = await postService.checkPostBeforeLike({
       postId,
-      userId,
     });
 
-    if (!checkPost) {
-      return responseHandler.forbidden(
-        res,
-        "This post does not belong to owner"
-      );
+    if (checkPost.author_id === userId) {
+      return responseHandler.forbidden(res, "You can't like your post");
     }
 
     const data = {

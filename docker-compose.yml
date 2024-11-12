@@ -1,0 +1,63 @@
+version: "3"
+
+services:
+  mytest-api:
+    container_name: mytest-api
+    build: .
+    restart: always
+    environment:
+      # DATABASE
+      DB_HOST: mytest-db
+      DB_USERNAME: test
+      DB_PASSWORD: test
+      # DB_PORT: 3306
+      DB_NAME: blogs
+
+    volumes:
+      - .:/app
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
+      - back-notused:/app/node_modules
+    ports:
+      - 5200:5000
+    networks:
+      - devster
+    depends_on:
+      - mytest-db
+    links:
+      - mytest-db
+
+  mytest-db:
+    container_name: mytest-db
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: blogs
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+    ports:
+      - 3344:3306
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - devster
+
+  mytest-phpmyadmin:
+    container_name: mytest-phpmyadmin
+    image: phpmyadmin
+    environment:
+      PMA_HOST: mytest-db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8050:80
+    networks:
+      - devster
+
+networks:
+  devster:
+    driver: bridge
+volumes:
+  dbdata:
+  back-notused:

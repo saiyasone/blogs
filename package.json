@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "nodemon src/server.js"
+    "start": "nodemon src/server.js",
+    "prod:start": "pm2-runtime src/server.js"
   },
   "dependencies": {
     "@prisma/client": "^5.19.0",

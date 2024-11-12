@@ -9,6 +9,7 @@ const selectModel = {
   status: true,
   like: true,
   subtitle: true,
+  imageUrl: true,
   updated_at: true,
   published_at: true,
   reads: true,
@@ -38,7 +39,7 @@ const selectModel = {
 };
 
 class PostService {
-  async getTotalPost() {
+  async getTotalPost({ query }) {
     const res = await db.posts.count({
       where: {
         AND: [
@@ -47,6 +48,11 @@ class PostService {
           },
           {
             status: BlogStatus.PUBLISHED,
+          },
+          {
+            title: {
+              contains: query.title,
+            },
           },
         ],
       },
@@ -193,6 +199,29 @@ class PostService {
     return await response;
   }
 
+  async checkPostBeforeLike({ postId }) {
+    const response = await db.posts.findFirst({
+      where: {
+        AND: [
+          {
+            isDelete: DeleleteStatus.NO,
+          },
+          {
+            id: postId,
+          },
+        ],
+      },
+      select: {
+        id: true,
+        like: true,
+        status: true,
+        author_id: true,
+      },
+    });
+
+    return await response;
+  }
+
   async createPost({ userId, data }) {
     const newPost = await db.posts.create({
       data: {
@@ -223,15 +252,20 @@ class PostService {
         id: postId,
       },
       data: {
-        title: data.title || "",
-        content: data.content || "",
+        title: data.title || undefined,
+        content: data.content || undefined,
+        subtitle: data.description || undefined,
         status: data.status,
         Post_Tag: {
-          update: {
-            data: data.tagIds?.map((tag) => ({
-              tag_id: tag,
-            })),
-          },
+          deleteMany: {},
+          // create: data.tagIds?.map((tag) => ({
+          //   tag_id: tag,
+          // })),
+          create: data.tagIds?.map((tagId) => ({
+            tag: {
+              connect: { id: tagId },
+            },
+          })),
         },
       },
       select: {
