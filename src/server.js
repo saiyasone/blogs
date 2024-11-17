@@ -1,9 +1,9 @@
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
-const https = require("https");
-const path = require("path");
-const fs = require("fs");
+// const https = require("https");
+// const path = require("path");
+// const fs = require("fs");
 
 const app = express();
 const db = require("./configs/db.config");
@@ -37,10 +37,10 @@ app.use("/api/v1", mainRoutes);
 
 const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
-const sslServer = https.createServer({
-  key: fs.readFileSync(path.resolve(__dirname, "../cert/key.pem")),
-  cert: fs.readFileSync(path.resolve(__dirname, "../cert/cert.pem")),
-});
+// const sslServer = https.createServer({
+//   key: fs.readFileSync(path.resolve(__dirname, "../cert/key.pem")),
+//   cert: fs.readFileSync(path.resolve(__dirname, "../cert/cert.pem")),
+// });
 
 const main = async () => {
   server.listen(PORT, () => {
