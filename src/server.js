@@ -33,6 +33,13 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.get("/hello", (req, res) => {
+  res
+    .json({
+      message: "hello",
+    })
+    .status(200);
+});
 app.use("/api/v1", mainRoutes);
 
 const PORT = process.env.PORT || 5000;
