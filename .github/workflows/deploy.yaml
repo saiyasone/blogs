@@ -21,7 +21,7 @@ jobs:
       - name: Deploy to Droplet
         run: |
           ssh -o StrictHostKeyChecking=no root@157.230.250.113 << 'EOF'
-          cd /var/www/backend/blog
+          cd /var/www/backend/blogs
           git pull origin production
           npm install
           pm2 restart blog || pm2 start src/server.js --name blog
