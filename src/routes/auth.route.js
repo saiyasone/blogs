@@ -4,8 +4,11 @@ const passport = require("passport");
 const isAuth = require("../middlewares/isAuthenticated.middleware");
 const controller = require("../controllers/auth.controller");
 
-router.post("/login", controller.Login);
-router.post("/register", controller.Register);
+const { dataValidate } = require("../utils/vaidation");
+const { loginSchema, registerSchema } = require("../schema/auth.schema");
+
+router.post("/login", dataValidate(loginSchema), controller.Login);
+router.post("/register", dataValidate(registerSchema), controller.Register);
 router.post("/reset-password", [isAuth], controller.ResetPassword);
 
 // auth google

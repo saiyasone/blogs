@@ -71,14 +71,14 @@ const updateComment = async (req, res) => {
   }
 
   try {
-    const response = await commentService.updateComment({
+    await commentService.updateComment({
       commentId,
       postId,
       content,
     });
 
     responseHandler.updated(res, {
-      id: response.id,
+      id: commentId,
       message: "Comment is updated",
     });
   } catch (error) {

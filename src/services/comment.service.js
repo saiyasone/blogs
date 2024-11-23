@@ -120,13 +120,20 @@ class CommentService {
   async updateComment({ commentId, postId, content }) {
     const res = await db.comments.update({
       where: {
-        id: commentId,
+        AND: [
+          {
+            id: commentId,
+          },
+          {
+            post_id: postId,
+          },
+        ],
       },
       data: {
         content,
       },
       select: {
-        id: true,
+        id: false,
       },
     });
 
