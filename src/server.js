@@ -2,26 +2,28 @@ const express = require("express");
 const http = require("http");
 const cors = require("cors");
 const helmet = require("helmet");
-
-const app = express();
-const db = require("./configs/db.config");
-
 const passport = require("passport");
 const cookieSession = require("cookie-session");
+const { default: pino } = require("pino");
+const db = require("./configs/db.config");
 
 require("./providers/googleAuth.provider");
 require("dotenv").config();
 
+const app = express();
+
 const mainRoutes = require("./routes/index.route");
+const { limiter } = require("./middlewares/rateLimit.middleware");
 
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
 app.use(
   express.urlencoded({
-    extended: false, 
+    extended: false,
   })
 );
+app.use(limiter);
 app.use(
   cookieSession({
     name: "google-session",

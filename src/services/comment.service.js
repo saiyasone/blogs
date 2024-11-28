@@ -61,6 +61,7 @@ class CommentService {
       select: {
         id: true,
         content: true,
+        post_id: true,
         author: {
           select: {
             id: true,
@@ -97,6 +98,7 @@ class CommentService {
       select: {
         id: true,
         content: true,
+        author_id: true,
       },
     });
     return response;
@@ -117,23 +119,18 @@ class CommentService {
     return await res;
   }
 
-  async updateComment({ commentId, postId, content }) {
+  async updateComment({ commentId, postId, content, authorId }) {
     const res = await db.comments.update({
       where: {
-        AND: [
-          {
-            id: commentId,
-          },
-          {
-            post_id: postId,
-          },
-        ],
+        id: commentId,
+        post_id: postId,
+        author_id: authorId,
       },
       data: {
         content,
       },
       select: {
-        id: false,
+        id: true,
       },
     });
 

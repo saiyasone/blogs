@@ -1,5 +1,5 @@
-const BlogStatus = require("../enums/blog-status.enum");
 const postService = require("../services/post.service");
+const { logError } = require("../utils/logs");
 const responseHandler = require("../utils/responseHandler");
 
 const getAllPosts = async (req, res) => {
@@ -9,13 +9,13 @@ const getAllPosts = async (req, res) => {
   let author = "";
   let limit = 5;
 
-  if (!!dataQuery?.title) {
+  if (dataQuery?.title) {
     title = dataQuery.title;
   }
-  if (!!dataQuery?.author) {
+  if (dataQuery?.author) {
     author = dataQuery.author;
   }
-  if (!!dataQuery?.limit) {
+  if (dataQuery?.limit) {
     limit = parseInt(dataQuery.limit);
   }
 
@@ -31,7 +31,7 @@ const getAllPosts = async (req, res) => {
 
     responseHandler.ok(res, { total, data: result });
   } catch (error) {
-    console.log({ error });
+    logError(error, "get all posts");
     responseHandler.error(res, error);
   }
 };
@@ -43,7 +43,7 @@ const getPost = async (req, res) => {
 
     responseHandler.ok(res, result);
   } catch (error) {
-    console.log({ error });
+    logError(error, "get post by id");
     responseHandler.error(res, error);
   }
 };
@@ -53,17 +53,17 @@ const getUserPost = async (req, res) => {
   const limit = parseInt(query?.limit) || 10;
 
   let title = "";
-  if (!!query?.title) {
+  if (query?.title) {
     title = query.title;
   }
 
   let status = "";
-  if (!!query?.status) {
+  if (query?.status) {
     status = query.status;
   }
 
   let search = "";
-  if (!!query?.search) {
+  if (query?.search) {
     search = query.search;
   }
 
@@ -93,7 +93,7 @@ const getUserPost = async (req, res) => {
 
     responseHandler.ok(res, finalResult);
   } catch (error) {
-    console.log({ error });
+    logError(error, "get post by user");
     responseHandler.error(res, error);
   }
 };
@@ -114,7 +114,7 @@ const createPost = async (req, res) => {
       message: "post is created",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "create post");
     responseHandler.error(res, error);
   }
 };
@@ -145,7 +145,7 @@ const createLikePost = async (req, res) => {
       message: "like is updated",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "add like");
     responseHandler.error(res, error);
   }
 };
@@ -191,7 +191,7 @@ const updatePost = async (req, res) => {
       message: "post is updated",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "update post");
     responseHandler.error(res, error);
   }
 };
@@ -218,7 +218,7 @@ const deletePost = async (req, res) => {
       message: "post is deleted",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "delete post");
     responseHandler.error(res, error);
   }
 };

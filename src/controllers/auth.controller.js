@@ -1,3 +1,4 @@
+const { logSuccess, logError } = require("../utils/logs");
 const userService = require("../services/user.service");
 const {
   encryptedPassword,
@@ -36,7 +37,7 @@ const Register = async (req, res) => {
       message: "user is created",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "Register");
     responseHandler.error(res, error);
   }
 };
@@ -59,15 +60,19 @@ const Login = async (req, res) => {
       return;
     }
 
-    const user = await userService.getUserById({ userId: checkUser.id });
+    const user = await userService.getUserById({
+      userId: checkUser.id,
+      isPassword: false,
+    });
     const accessToken = await jwtSign(user);
 
+    await logSuccess(user, "login");
     responseHandler.ok(res, {
       accessToken,
       message: "Login success",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "login");
     responseHandler.error(res, error);
   }
 };
@@ -86,7 +91,7 @@ const GoogleSignIn = async (req, res) => {
       accessToken: req.user.accessToken,
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "login with google");
     responseHandler.error(res, error);
   }
 };
@@ -96,7 +101,11 @@ const ResetPassword = async (req, res) => {
   const { id: userId } = req.user;
 
   try {
-    const checkUser = await userService.getUserById({ userId });
+    const checkUser = await userService.getUserById({
+      userId,
+      isPassword: false,
+    });
+
     if (!checkUser.id) {
       return responseHandler.dataConflict(
         res,
@@ -129,7 +138,7 @@ const ResetPassword = async (req, res) => {
       message: "Password updated successfully",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "Reset password");
     responseHandler.error(res, error);
   }
 };

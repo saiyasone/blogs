@@ -1,4 +1,5 @@
 const categoryService = require("../services/category.service");
+const { logError } = require("../utils/logs");
 const responseHandler = require("../utils/responseHandler");
 
 const getAllCategories = async (req, res) => {
@@ -7,7 +8,7 @@ const getAllCategories = async (req, res) => {
 
     responseHandler.ok(res, response);
   } catch (error) {
-    console.log({ error });
+    logError(error, "get all post");
     responseHandler.error(res, error);
   }
 };
@@ -19,7 +20,7 @@ const getCategory = async (req, res) => {
 
     responseHandler.ok(res, response);
   } catch (error) {
-    console.log({ error });
+    logError(error, "get category by id");
     responseHandler.error(res, error);
   }
 };
@@ -34,7 +35,7 @@ const createCategory = async (req, res) => {
       message: "category is created",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "create category");
     responseHandler.error(res, error);
   }
 };
@@ -60,7 +61,7 @@ const updateCategory = async (req, res) => {
       message: "category is updated",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "update category");
     responseHandler.error(res, error);
   }
 };
@@ -81,7 +82,7 @@ const deleteCategory = async (req, res) => {
       message: "category is deleted",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "delete category failed");
     responseHandler.error(res, error);
   }
 };

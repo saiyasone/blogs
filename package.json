@@ -17,8 +17,11 @@
     "cookie-session": "^2.1.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
+    "csurf": "^1.11.0",
     "dotenv": "^16.4.5",
+    "eslint": "^9.15.0",
     "express": "^4.19.2",
+    "express-rate-limit": "^7.4.1",
     "firebase": "^10.13.2",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
@@ -27,8 +30,14 @@
     "nodemon": "^3.1.4",
     "passport": "0.5",
     "passport-google-oauth2": "^0.2.0",
+    "pino": "^9.5.0",
+    "pino-pretty": "^13.0.0",
     "prisma": "^5.19.0",
     "uuid": "^10.0.0",
     "yup": "^1.4.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "globals": "^15.12.0"
   }
 }

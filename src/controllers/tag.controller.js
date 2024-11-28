@@ -1,4 +1,5 @@
 const tagService = require("../services/tag.service");
+const { logError } = require("../utils/logs");
 const responseHandler = require("../utils/responseHandler");
 
 const getAllTags = async (req, res) => {
@@ -6,7 +7,7 @@ const getAllTags = async (req, res) => {
     const response = await tagService.getAllTags();
     responseHandler.ok(res, response);
   } catch (error) {
-    console.log({ error });
+    logError(error, "get all tags failed");
     responseHandler.error(res, error);
   }
 };
@@ -18,7 +19,7 @@ const getTag = async (req, res) => {
     const response = await tagService.getTagById({ tagId: id });
     responseHandler.ok(res, response);
   } catch (error) {
-    console.log({ error });
+    logError(error, "get tag by id");
     responseHandler.error(res, error);
   }
 };
@@ -31,7 +32,7 @@ const createTag = async (req, res) => {
       message: "tag created",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "create tag failed");
     responseHandler.error(res, error);
   }
 };
@@ -54,7 +55,7 @@ const updateTag = async (req, res) => {
       message: "tag updated",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "update tag");
     responseHandler.error(res, error);
   }
 };
@@ -74,7 +75,7 @@ const deleteTag = async (req, res) => {
       message: "tag deleted",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "delete tag failed");
     responseHandler.error(res, error);
   }
 };

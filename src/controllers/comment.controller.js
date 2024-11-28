@@ -1,4 +1,5 @@
 const commentService = require("../services/comment.service");
+const { logError } = require("../utils/logs");
 const responseHandler = require("../utils/responseHandler");
 
 const getCommentByPost = async (req, res) => {
@@ -6,7 +7,7 @@ const getCommentByPost = async (req, res) => {
   const { limit } = req.query;
 
   let limitData = "";
-  if (!!limit) {
+  if (limit) {
     limitData = limit;
   }
   const take = parseInt(limitData) || 5;
@@ -25,7 +26,7 @@ const getCommentByPost = async (req, res) => {
 
     responseHandler.ok(res, { total, data: response });
   } catch (error) {
-    console.log({ error });
+    logError(error, "get comment by post");
     responseHandler.error(res, error);
   }
 };
@@ -51,7 +52,7 @@ const createComment = async (req, res) => {
       message: "Comment is created",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "create comment");
     responseHandler.error(res, error);
   }
 };
@@ -75,6 +76,7 @@ const updateComment = async (req, res) => {
       commentId,
       postId,
       content,
+      authorId: userId,
     });
 
     responseHandler.updated(res, {
@@ -82,7 +84,7 @@ const updateComment = async (req, res) => {
       message: "Comment is updated",
     });
   } catch (error) {
-    console.log({ error });
+    logError(error, "update comment");
     responseHandler.error(res, error);
   }
 };

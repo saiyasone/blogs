@@ -1,4 +1,5 @@
 const { jwtVerify, jwtDecode } = require("../utils/jwtToken");
+const { logError } = require("../utils/logs");
 const responseHandler = require("../utils/responseHandler");
 
 const isAuthenticated = (req, res, next) => {
@@ -24,7 +25,7 @@ const isAuthenticated = (req, res, next) => {
       responseHandler.unauthorize(res, "Invalid token");
     }
   } catch (error) {
-    console.log({ error });
+    logError(error, "authentication failed");
     responseHandler.forbidden(res, error);
   }
 };

@@ -31,11 +31,11 @@ const updateProfile = async (req, res) => {
   const { id: userId } = req.user;
 
   try {
-    const user = await userService.getUserById({ userId });
+    const user = await userService.getUserById({ userId, isPassword: true });
     if (!user)
       return responseHandler.unauthorize(
         res,
-        "User is not found or  unauthorized"
+        "User is not found or unauthorized"
       );
 
     const result = await userService.updateUser({
