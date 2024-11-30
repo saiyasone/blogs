@@ -1,13 +1,13 @@
 version: "3"
 
 services:
-  mytest-api:
-    container_name: mytest-api
+  api:
+    container_name: api
     build: .
     restart: always
     environment:
       # DATABASE
-      DB_HOST: mytest-db
+      DB_HOST: blog-host
       DB_USERNAME: test
       DB_PASSWORD: test
       # DB_PORT: 3306
@@ -23,12 +23,12 @@ services:
     networks:
       - devster
     depends_on:
-      - mytest-db
+      - blog-host
     links:
-      - mytest-db
+      - blog-host
 
-  mytest-db:
-    container_name: mytest-db
+  blog-host:
+    container_name: blog-host
     image: mysql
     environment:
       MYSQL_ROOT_PASSWORD: test
@@ -46,7 +46,7 @@ services:
     container_name: mytest-phpmyadmin
     image: phpmyadmin
     environment:
-      PMA_HOST: mytest-db
+      PMA_HOST: blog-host
       PMA_PORT: 3306
       PMA_ARBITRARY: 1
     restart: always

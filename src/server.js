@@ -4,7 +4,6 @@ const cors = require("cors");
 const helmet = require("helmet");
 const passport = require("passport");
 const cookieSession = require("cookie-session");
-const { default: pino } = require("pino");
 const db = require("./configs/db.config");
 
 require("./providers/googleAuth.provider");

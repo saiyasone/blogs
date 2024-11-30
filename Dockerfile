@@ -12,6 +12,6 @@ COPY . .
 
 COPY .env .env
 
-EXPOSE 5100
+EXPOSE 5200
 
 CMD ["yarn", "dev"]
