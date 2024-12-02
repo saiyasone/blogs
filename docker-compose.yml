@@ -6,11 +6,9 @@ services:
     build: .
     restart: always
     environment:
-      # DATABASE
       DB_HOST: blog-host
       DB_USERNAME: test
       DB_PASSWORD: test
-      # DB_PORT: 3306
       DB_NAME: blogs
 
     volumes:
@@ -26,6 +24,19 @@ services:
       - blog-host
     links:
       - blog-host
+
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - 80:80
+    depends_on:
+      - api
+    networks:
+      - devster
+    
 
   blog-host:
     container_name: blog-host
