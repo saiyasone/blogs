@@ -14,7 +14,7 @@ initializeApp(firebaseConfig);
 
 const storage = getStorage();
 
-const  uploadToFirebase = async ({ dataFile, path }) => {
+const uploadToFirebase = async ({ dataFile, path }) => {
   try {
     const newName = randomFileNewName(dataFile);
 
